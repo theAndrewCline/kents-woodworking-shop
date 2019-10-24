@@ -10,7 +10,7 @@ import Html.Attributes exposing (..)
 
 
 main =
-    Browser.document
+    Browser.element
         { init = init
         , view = view
         , update = update
@@ -69,11 +69,9 @@ subscriptions model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
-    { title = model.title
-    , body =
-        [ h1 [] [ text model.title ]
+    div [ class "bg-teal" ]
+        [ h1 [ class "" ] [ text model.title ]
         , p [] [ text model.greeting ]
         ]
-    }
