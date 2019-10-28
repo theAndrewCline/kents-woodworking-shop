@@ -1,20 +1,25 @@
 module Main exposing (main)
 
 import Browser
+import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Url
 
 
 
 -- MAIN
 
 
+main : Program () Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
         }
 
 
@@ -23,7 +28,9 @@ main =
 
 
 type alias Model =
-    { title : String
+    { key : Nav.Key
+    , url : Url.Url
+    , title : String
     , greeting : String
     }
 
@@ -32,9 +39,11 @@ type alias Model =
 -- INIT
 
 
-init : () -> ( Model, Cmd Msg )
-init _ =
-    ( { title = "Kent's Woodworking Shop"
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init _ url key =
+    ( { key = key
+      , url = url
+      , title = "Kent's Woodworking Shop"
       , greeting = "Welcome, take a look around"
       }
     , Cmd.none
@@ -46,14 +55,25 @@ init _ =
 
 
 type Msg
-    = NoOp
+    = UrlChanged Url.Url
+    | LinkClicked Browser.UrlRequest
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            ( model, Cmd.none )
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Nav.load href )
+
+        UrlChanged url ->
+            ( { model | url = url }
+            , Cmd.none
+            )
 
 
 
@@ -83,9 +103,9 @@ navigation : Model -> Html Msg
 navigation model =
     nav [ class "bg-red-600" ]
         [ ul [ class "flex items-center justify-end h-10" ]
-            [ li [ class "mr-6 " ] [ a [ class "text-orange-100", href "#" ] [ text "Home" ] ]
-            , li [ class "mr-6" ] [ a [ class "text-orange-100", href "#" ] [ text "About" ] ]
-            , li [ class "mr-6" ] [ a [ class "text-orange-100", href "#" ] [ text "Projects" ] ]
+            [ li [ class "mr-6 " ] [ a [ class "text-orange-100", href "/home" ] [ text "Home" ] ]
+            , li [ class "mr-6" ] [ a [ class "text-orange-100", href "/about" ] [ text "About" ] ]
+            , li [ class "mr-6" ] [ a [ class "text-orange-100", href "/projects" ] [ text "Projects" ] ]
             ]
         ]
 
