@@ -7,6 +7,8 @@ describe('navigation', () => {
 
     cy.url()
       .should('include', '/home')
+
+    cy.contains('Kent\'s Woodworking Shop')
   })
 
   it('should be able to navigate About', () => {
@@ -17,6 +19,8 @@ describe('navigation', () => {
 
     cy.url()
       .should('include', '/about')
+
+    cy.contains('About Kent')
   })
 
   it('should be able to navigate Projects', () => {
