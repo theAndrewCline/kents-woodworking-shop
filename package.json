@@ -30,6 +30,7 @@
   "homepage": "https://github.com/theAndrewCline/kents-woodworking-shop#readme",
   "devDependencies": {
     "cypress": "^3.5.0",
+    "cypress-dark": "^1.7.14",
     "elm-hot": "^1.1.2",
     "node-elm-compiler": "^5.0.4",
     "parcel-bundler": "^1.12.4"
