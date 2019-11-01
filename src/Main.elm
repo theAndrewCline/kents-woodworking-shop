@@ -4,8 +4,8 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Page exposing (Page(..), urlPage)
 import Url exposing (Url)
-import Url.Parser as Url exposing ((</>), Parser)
 
 
 
@@ -107,48 +107,22 @@ navigation model =
         ]
 
 
-landingPage : Html Msg
-landingPage =
+homePage : Html Msg
+homePage =
     div [ class ".container bg-orange-100 p-6" ]
         [ h1 [ class "text-2xl mb-2" ] [ text "Kent's Woodworking Shop" ]
         , p [ class "text-gray-800" ] [ text "welcome take a look around" ]
         ]
 
 
-
--- PAGES
-
-
-type Page
-    = Home
-    | About
-    | Projects
-
-
 viewPage : Page -> Html Msg
 viewPage page =
     case page of
         Home ->
-            landingPage
+            homePage
 
         About ->
             div [] [ text "About Kent" ]
 
         Projects ->
             div [] [ text "Project Page" ]
-
-
-urlParser : Parser (Page -> a) a
-urlParser =
-    Url.oneOf
-        [ Url.map Home (Url.s "home")
-        , Url.map About (Url.s "about")
-        , Url.map Projects (Url.s "projects")
-        ]
-
-
-urlPage : Url.Url -> Page
-urlPage url =
-    url
-        |> Url.parse urlParser
-        |> Maybe.withDefault Home
