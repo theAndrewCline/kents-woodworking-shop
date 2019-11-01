@@ -4,7 +4,8 @@ import Browser
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Url
+import Url exposing (Url)
+import Url.Parser as Url exposing ((</>), Parser)
 
 
 
@@ -30,8 +31,7 @@ main =
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
-    , title : String
-    , greeting : String
+    , page : Page
     }
 
 
@@ -43,8 +43,7 @@ init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
     ( { key = key
       , url = url
-      , title = "Kent's Woodworking Shop"
-      , greeting = "Welcome, take a look around"
+      , page = Home
       }
     , Cmd.none
     )
@@ -71,9 +70,7 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            ( { model | url = url }
-            , Cmd.none
-            )
+            ( { model | page = urlPage url }, Cmd.none )
 
 
 
@@ -91,10 +88,10 @@ subscriptions model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = model.title
+    { title = "Kent's Woodworking Shop"
     , body =
         [ navigation model
-        , landingPage model
+        , viewPage model.page
         ]
     }
 
@@ -110,9 +107,48 @@ navigation model =
         ]
 
 
-landingPage : Model -> Html Msg
-landingPage model =
+landingPage : Html Msg
+landingPage =
     div [ class ".container bg-orange-100 p-6" ]
-        [ h1 [ class "text-2xl mb-2" ] [ text model.title ]
-        , p [ class "text-gray-800" ] [ text model.greeting ]
+        [ h1 [ class "text-2xl mb-2" ] [ text "Kent's Woodworking Shop" ]
+        , p [ class "text-gray-800" ] [ text "welcome take a look around" ]
         ]
+
+
+
+-- PAGES
+
+
+type Page
+    = Home
+    | About
+    | Projects
+
+
+viewPage : Page -> Html Msg
+viewPage page =
+    case page of
+        Home ->
+            landingPage
+
+        About ->
+            div [] [ text "About Kent" ]
+
+        Projects ->
+            div [] [ text "Project Page" ]
+
+
+urlParser : Parser (Page -> a) a
+urlParser =
+    Url.oneOf
+        [ Url.map Home (Url.s "home")
+        , Url.map About (Url.s "about")
+        , Url.map Projects (Url.s "projects")
+        ]
+
+
+urlPage : Url.Url -> Page
+urlPage url =
+    url
+        |> Url.parse urlParser
+        |> Maybe.withDefault Home
